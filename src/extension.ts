@@ -1,25 +1,35 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import MarkdownIt = require("markdown-it");
+import {DoAuthoringMdItPlugin, DoPluginOptions} from "markdown-it-do-co-pack";
+import * as vscode from "vscode";
+import { getCommandString } from "./constants";
+import { generateCss } from "./css-process";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "do-authoring-toolkit" is now active!');
+	context.subscriptions.push(
+		vscode.commands.registerCommand(getCommandString("rebuildCss"), async () => {
+			try {
+				await generateCss(true);
+				vscode.window.showInformationMessage(`CSS rebuilt!`);
+			} catch (err) {
+				vscode.window.showErrorMessage(`Error rebuilding CSS`, err.toString());
+			}
+		})
+	);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('do-authoring-toolkit.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from do-authoring-toolkit!');
-	});
-
-	context.subscriptions.push(disposable);
+	return {
+		extendMarkdownIt(md: MarkdownIt) {
+			// This interferes with the variable highlighter rule (e.g. `<^>myVar<^>`)
+			md.disable("math_inline", true);
+			md.use<DoPluginOptions>(DoAuthoringMdItPlugin, {
+				rules: "all"
+			});
+			return md;
+		},
+	};
 }
 
 // this method is called when your extension is deactivated

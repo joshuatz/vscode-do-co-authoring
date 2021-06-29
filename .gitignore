@@ -3,3 +3,10 @@ dist
 node_modules
 .vscode-test/
 *.vsix
+do-md.css
+do-raw.css
+.yalc
+yalc.lock
+yalc.sig
+scripts/*.js
+scripts/*.js.map

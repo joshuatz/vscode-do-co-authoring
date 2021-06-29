@@ -15,7 +15,23 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"preLaunchTask": "${defaultBuildTask}"
+			"preLaunchTask": "${defaultBuildTask}",
+			"trace": true
+		},
+		{
+			"name": "Run Extension (no trace, faster)",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"-disable-extensions",
+				"--extensionDevelopmentPath=${workspaceFolder}"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"preLaunchTask": "${defaultBuildTask}",
+			"trace": false,
+			"stopOnEntry": false
 		},
 		{
 			"name": "Extension Tests",

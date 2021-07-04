@@ -7,7 +7,8 @@
 		"vscode": "^1.57.0"
 	},
 	"categories": [
-		"Other"
+		"Other",
+		"Snippets"
 	],
 	"activationEvents": [],
 	"main": "./out/extension.js",
@@ -21,6 +22,12 @@
 		],
 		"markdown.previewStyles": [
 			"./do-md.css"
+		],
+		"snippets": [
+			{
+				"language": "markdown",
+				"path": "./snippets/markdown.code-snippets"
+			}
 		]
 	},
 	"scripts": {

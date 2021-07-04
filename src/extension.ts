@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import MarkdownIt = require("markdown-it");
-import {DoAuthoringMdItPlugin, DoPluginOptions} from "markdown-it-do-co-pack";
+import { DoAuthoringMdItPlugin, DoPluginOptions } from "markdown-it-do-co-pack";
 import * as vscode from "vscode";
 import { getCommandString } from "./constants";
 import { generateCss } from "./css-process";
@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 			// This interferes with the variable highlighter rule (e.g. `<^>myVar<^>`)
 			md.disable("math_inline", true);
 			md.use<DoPluginOptions>(DoAuthoringMdItPlugin, {
-				rules: "all"
+				rules: "all",
 			});
 			return md;
 		},

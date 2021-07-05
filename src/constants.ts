@@ -1,8 +1,7 @@
 export const PLUGIN_NAME = 'do-authoring-toolkit';
+export const PLUGIN_CONFIG_KEY = 'docoat';
 
-export const COMMANDS = [
-	'rebuildCss'
-] as const;
+export const COMMANDS = ['rebuildCss', 'removeDraftArtifacts'] as const;
 
 export type Command = typeof COMMANDS[number];
 

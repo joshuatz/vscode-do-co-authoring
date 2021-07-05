@@ -2,7 +2,7 @@ import fs from 'fs';
 import https from 'https';
 import fetch from 'node-fetch';
 import { env } from 'process';
-import {normalize} from 'path';
+import { normalize } from 'path';
 
 const PROD_PAGE = 'https://www.digitalocean.com/community';
 const PROD_CSS_URL_PATT = /<link .+?href="([^"]*?\/assets\/community\/application-[^"]+\.css)"/i;
@@ -19,7 +19,6 @@ export function prefixCssLines(cssString: string, prefix: string) {
 		return `${prefix} ${selector}${declaration}`;
 	});
 }
-
 
 export async function generateCss(regenerate = false) {
 	let PROD_CSS_URL = env.PROD_CSS_URL;
@@ -56,21 +55,25 @@ export async function generateCss(regenerate = false) {
 	const findAndReplaceArr: Array<[string | RegExp, string]> = [
 		[/\.tutorial-single/gi, 'html'],
 		[/\.section-content/gi, 'body'],
-		[/\.content-body/gi, 'body']
+		[/\.content-body/gi, 'body'],
 	];
 
-	const rawCss = fs.readFileSync(RAW_CSS_FILEPATH, {
-		encoding: 'utf8'
-	}).toString();
+	const rawCss = fs
+		.readFileSync(RAW_CSS_FILEPATH, {
+			encoding: 'utf8',
+		})
+		.toString();
 	let fixedCss = rawCss;
 	findAndReplaceArr.forEach((replaceTuple) => {
 		fixedCss = fixedCss.replace(replaceTuple[0], replaceTuple[1]);
 	});
 
 	// Combine patched DO css with VSCode overrides / fixes
-	const vscodePatchedCss = fs.readFileSync(VSCODE_PATCH_CSS_FILEPATH, {
-		encoding: 'utf8',
-	}).toString();
+	const vscodePatchedCss = fs
+		.readFileSync(VSCODE_PATCH_CSS_FILEPATH, {
+			encoding: 'utf8',
+		})
+		.toString();
 	fixedCss = '\n\n/* VSCode CSS Patches below: */\n\n' + vscodePatchedCss + '\n\n/* DO CSS */\n\n' + fixedCss;
 
 	// This is hackish, but is the only way (AFAIK) to override the high-specificity rules injected by markdown.css, without using manual !important resets or something like that
@@ -78,7 +81,7 @@ export async function generateCss(regenerate = false) {
 	fixedCss = prefixCssLines(fixedCss, 'html[style*="--markdown-font-family"]');
 
 	fs.writeFileSync(TRANSFORMED_CSS_FILEPATH, fixedCss, {
-		encoding: 'utf8'
+		encoding: 'utf8',
 	});
 
 	return TRANSFORMED_CSS_FILEPATH;

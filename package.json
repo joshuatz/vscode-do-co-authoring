@@ -10,9 +10,24 @@
 		"Other",
 		"Snippets"
 	],
-	"activationEvents": [],
+	"activationEvents": ["onLanguage:markdown"],
 	"main": "./out/extension.js",
 	"contributes": {
+		"configuration": {
+			"title": "DigitalOcean Community Authoring Toolkit",
+			"properties": {
+				"docoat.enabled": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "Enable or disable the entire extension."
+				},
+				"docoat.enabledPatterns": {
+					"type": ["array", "null"],
+					"default": null,
+					"markdownDescription": "List of globs to enable the extension for"
+				}
+			}
+		},
 		"markdown.markdownItPlugins": true,
 		"commands": [
 			{
@@ -36,7 +51,8 @@
 		"build:css": "ts-node --transpile-only ./scripts/css-gen.ts",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
-		"lint": "eslint src --ext ts",
+		"fix": "prettier --write src/**/*.ts",
+		"lint": "eslint src --ext ts && prettier --check src",
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {

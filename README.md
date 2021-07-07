@@ -1,70 +1,90 @@
-# do-authoring-toolkit README
+# do-co-authoring-toolkit
+> Extension to help with the DigitalOcean authoring experience within VSCode.
 
-This is the README for your extension "do-authoring-toolkit". After writing up a brief description, we recommend including the following sections.
+> 💡 TIP: This extension requires flipping a setting to enable the altered Markdown preview and editor; see [*"Extension Settings"*](#extension-settings) for details.
 
 ## Features
+### Markdown Preview
+The main reason why this extension was prototyped in the first place, and probably the most impressive part of it: this extension alters the built-in VSCode Markdown preview panel to match the DigitalOcean Community site:
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+![Screenshot showing a Markdown text editor panel next to a live preview panel. The live preview panel shows the Markdown previewed as a webpage, which almost identical to how it would appear published on a DigitalOcean Community page](assets/main-demo-screenshot.png)
 
-For example if there is an image subfolder under your extension project workspace:
+This preview should be an almost identical 1:1 match to [the official Markdown preview tool](https://www.digitalocean.com/community/markdown), but works locally, across all your Markdown files, and runs directly in VScode.
 
-\!\[feature X\]\(images/feature-x.png\)
+It does so by:
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- Using [`markdown-it-do-co-pack`](https://github.com/joshuatz/markdown-it-do-co-pack) under the hood, a Markdown-it rule pack that supports the DO Community flavor of Markdown
+- Combining the production CSS of the Community site with some specific VSCode overrides, and injecting it into the preview pane
+
+> You can open the preview panel by using one of the built-in VSCode commands, like `Markdown: Open Preview to the Side`. For further instructions specific to the built-in preview pane functionality in VSCode, refer to [the official docs](https://code.visualstudio.com/docs/languages/markdown#_markdown-preview).
+
+### Commands
+Commands perform a specific task when run, and can be executed via [the *Command Palette*](https://code.visualstudio.com/docs/getstarted/userinterface#_command-palette), and from a few other spots.
+
+The commands bundled with this extension are:
+
+Command | Title | Description
+--- | --- | ---
+`removeDraftArtifacts` | DO-CO Toolkit: Remove Draft Artifacts (Clean) | Will remove *draft artifacts*, which are things in the Markdown source code that should not be included in publications, such as draft notes or HTML comments.
+`rebuildCss` | DO-CO Toolkit: Rebuild Preview CSS | Rebuilds the generated CSS file that is used for the Markdown preview feature. You should use this command if DigitalOcean has updated the style of their community pages and the Markdown preview no longer matches. <br/><br/>Please do not use the command unnecessarily (you should almost never have to run this).
+
+### Snippets
+There are some bundled snippets included with this extension. If you are unfamiliar with [VSCode snippets](https://code.visualstudio.com/docs/editor/userdefinedsnippets), you can think of them like macros, which perform a small editing task, like inserting or replacing text.
+
+You can find the included snippets in [`/snippets`](./snippets), or listed below:
+
+Snippet Prefix | Description
+--- | ---
+DO-CO Note | Inserts a note for publication.
+DO-CO Warning Note | Inserts a warning note to the users.
+DO-CO Info Note | Inserts an info note.
+DO-CO Draft Note | Inserts a draft note.
+DO-CO Variable Highlight Wrap | Wraps selected text, or lines of text, as highlighted variables (`<^>your_text<^>`)
+
+### Diagnostics
+WIP: Right now, the only problem that is looked for is the use of "I" instead of "You". When applicable, this extension will try to provide *Quick-Fix* actions for reported problems.
+
+![Screenshot showing a problem reported with the use of the first-person singular "I"](assets/problem-reported-demo.png)
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+No required system dependencies.
+
+However, in order for the altered preview and editing experience to be enabled, you need to explicitly enable it via one of [the settings](#extension-settings):
 
 ## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+* `jtz-do-co-authoring-toolkit.enable`: enable/disable this extension
+* `jtz-do-co-authoring-toolkit.enabledPatterns`: Accepts an array of glob patterns to match against files in the editor, and enable the extension for. If set, overrides `.enable` setting.
+
+> 💡 You must use one of settings above to explicitly enable the extension.
 
 ## Known Issues
+For the Markdown preview feature, this extension modifies the default Markdown preview window by hooking into VSCode's Markdown-it plugin loader. Since it shares the webview with other Markdown extensions, it could potentially conflict with other rule sets.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+For bugs with the Markdown preview feature, most issues should get posted to [the `markdown-it-do-co-pack` repository](https://github.com/joshuatz/markdown-it-do-co-pack), which is the pack of Markdown-it rules powering this extension's preview feature.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+Version | Date | Notes
+--- | --- | ---
+`0.0.1` | TBD | Initial Release 🚀
 
-### 1.0.0
+## Disclaimers
+> *DigitalOcean* is a registered trademark of DigitalOcean, LLC. This tool is not affiliated with nor endorsed by DigitalOcean or the DigitalOcean Community in any *official* capacity.
 
-Initial release of ...
+## Backlog / TODO
+- Publish! (check below guidelines first)
+- Add more [Programmatic Language Features](https://code.visualstudio.com/api/language-extensions/programmatic-language-features)
+	- Example: Offer autocomplete when typing `<$>[`, with options of `draft`, `note`, `warning, ` or `info`
+- Add Icon(s)
+- Finalize naming conventions
+- Add command to open the formatting guide (via short link redirect)
+- See if it's possible to conditionally inject the CSS for MD Preview, instead of through `package.json` for all MD files
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-## Following extension guidelines
+### Following extension guidelines
 
 Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
 
 * [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**

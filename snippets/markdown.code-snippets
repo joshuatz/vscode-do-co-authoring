@@ -2,7 +2,7 @@
 	"Note": {
 		"prefix": "DO-CO Note",
 		"body": "<$>[note]\n**Note:** ${TM_SELECTED_TEXT:${1:Use this for notes on a publication.}}\n<$>",
-		"description": "Inserts a note for publication"
+		"description": "Inserts a note for publication."
 	},
 	"Warning Note": {
 		"prefix": "DO-CO Warning Note",
@@ -22,6 +22,6 @@
 	"Wrap Selected Text as Variables": {
 		"prefix": "DO-CO Variable Highlight Wrap",
 		"body": "${TM_SELECTED_TEXT/^([ \t]*)(?<!```)([^`\r\n]+)(.*)([ \t]*)$/$1<^>$2$3<^>$4/gm}",
-		"description": "Wraps selected text, or lines of text, as highlighted variables (`<^>your_text<^>`)"
+		"description": "Wraps selected text, or lines of text, as highlighted variables (`<^>your_text<^>`)",
 	},
 }

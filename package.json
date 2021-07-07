@@ -1,28 +1,45 @@
 {
-	"name": "do-authoring-toolkit",
-	"displayName": "do-authoring-toolkit",
+	"name": "do-co-authoring-toolkit",
+	"displayName": "Unofficial DigitalOcean Community Authoring Toolkit",
 	"description": "Extension to help with the DigitalOcean authoring experience within VSCode.",
-	"version": "0.0.1",
-	"engines": {
-		"vscode": "^1.57.0"
-	},
 	"categories": [
 		"Other",
 		"Snippets"
 	],
-	"activationEvents": ["onLanguage:markdown"],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/joshuatz/vscode-do-co-authoring.git"
+	},
+	"bugs": {
+		"url": "https://github.com/joshuatz/vscode-do-co-authoring/issues"
+	},
+	"author": {
+		"name": "Joshua Tzucker",
+		"url": "https://joshuatz.com/?utm_source=package"
+	},
+	"homepage": "https://github.com/joshuatz/vscode-do-co-authoring",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.57.0"
+	},
 	"main": "./out/extension.js",
+	"activationEvents": [
+		"onLanguage:markdown"
+	],
 	"contributes": {
 		"configuration": {
-			"title": "DigitalOcean Community Authoring Toolkit",
+			"title": "Unofficial DigitalOcean Community Authoring Toolkit",
 			"properties": {
-				"docoat.enabled": {
+				"jtz-do-co-authoring-toolkit.enabled": {
 					"type": "boolean",
 					"default": false,
 					"markdownDescription": "Enable or disable the entire extension."
 				},
-				"docoat.enabledPatterns": {
-					"type": ["array", "null"],
+				"jtz-do-co-authoring-toolkit.enabledPatterns": {
+					"type": [
+						"array",
+						"null"
+					],
 					"default": null,
 					"markdownDescription": "List of globs to enable the extension for"
 				}
@@ -31,8 +48,12 @@
 		"markdown.markdownItPlugins": true,
 		"commands": [
 			{
-				"command": "do-authoring-toolkit.rebuildCss",
-				"title": "DOCO Toolkit: Rebuild Preview CSS"
+				"command": "do-co-authoring-toolkit.rebuildCss",
+				"title": "DO-CO Toolkit: Rebuild Preview CSS"
+			},
+			{
+				"command": "do-co-authoring-toolkit.removeDraftArtifacts",
+				"title": "DO-CO Toolkit: Remove Draft Artifacts (Clean)"
 			}
 		],
 		"markdown.previewStyles": [
@@ -72,7 +93,7 @@
 		"vscode-test": "^1.5.2"
 	},
 	"dependencies": {
-		"markdown-it-do-co-pack": "file:.yalc/markdown-it-do-co-pack",
+		"markdown-it-do-co-pack": "^1.0.0",
 		"node-fetch": "^2.6.1"
 	}
 }

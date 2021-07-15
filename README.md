@@ -63,6 +63,8 @@ This extension contributes the following settings:
 ## Known Issues
 For the Markdown preview feature, this extension modifies the default Markdown preview window by hooking into VSCode's Markdown-it plugin loader. Since it shares the webview with other Markdown extensions, it could potentially conflict with other rule sets.
 
+It also forcefully disables certain rules that are known to conflict, and are unsupported by DigitalOcean Community - for example, the `math_inline` rule for KaTeX support (see [issue #2](https://github.com/joshuatz/vscode-do-co-authoring/issues/2)).
+
 For bugs with the Markdown preview feature, most issues should get posted to [the `markdown-it-do-co-pack` repository](https://github.com/joshuatz/markdown-it-do-co-pack), which is the pack of Markdown-it rules powering this extension's preview feature.
 
 ## Release Notes

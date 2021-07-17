@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "ES6",
+		"outDir": "../../out/preview-injection",
+		"lib": ["ES6", "DOM"],
+		"rootDir": "./",
+		"strict": true
+	},
+	"references": []
+}

@@ -5,6 +5,8 @@
 import { DoAuthoringMdItPlugin, DoPluginOptions, OrderedRules } from 'markdown-it-do-co-pack';
 import { getShouldBeEnabled } from './utils';
 import MarkdownIt = require('markdown-it');
+import Token = require('markdown-it/lib/token');
+import { PLUGIN_CSS_CLASS_NAME } from './constants';
 
 /**
  * This is a workaround, since Markdown-its `.disable()` function does not handle multiple rules with the same name - it will just disable the first one that matches. This function disables ***all*** rules on the given `Ruler`(s) that match the given `ruleName`
@@ -36,9 +38,17 @@ function toggleAllRulesByName(md: MarkdownIt, ruleName: string, updatedEnabledSt
 	}
 }
 
-export function extendMarkdownIt(md: MarkdownIt) {
+/**
+ * Conditionally loads rules into Markdown-it instance, injects HTML element, and data attributes
+ * @param md Instance of Markdown-it
+ * @param injectData Key-Pair data to be injected via `data-key="val"` html attributes, on highest level injected element
+ */
+export function conditionallyExtendMarkdownIt(md: MarkdownIt, injectData?: Record<string, string>): MarkdownIt {
 	let isEnabled = false;
 
+	/**
+	 * Conditionally load (or back-out) rules
+	 */
 	const conditionallyApply = () => {
 		if (getShouldBeEnabled()) {
 			if (!isEnabled) {
@@ -70,11 +80,41 @@ export function extendMarkdownIt(md: MarkdownIt) {
 	// Override default MDIT parse() and render() calls, so extension always
 	// has a chance to load (or unload) rule sets based on open file
 	const { parse, render } = md;
+
+	// parse is going to be called here: https://github.com/microsoft/vscode/blob/4b6444d73bb7ae2c9ba0c1bda37e574e8c232fd4/extensions/markdown-language-features/src/markdownEngine.ts#L152-L156
+	// Token array returned here eventually gets turned into HTML used for preview
 	md.parse = (src, env) => {
 		conditionallyApply();
-		return parse.call(md, src, env);
+		if (getShouldBeEnabled()) {
+			let dataAttrString = '';
+			if (injectData) {
+				dataAttrString = Object.entries(injectData)
+					.map((p) => `data-${p[0]}="${p[1]}"`)
+					.join(' ');
+			}
+
+			// Construct <div> wrapper around content
+			// I'm using this so that JS / CSS that is loaded into the preview 100% of the time can detect if the extension is soft-disabled
+			// @see https://github.com/joshuatz/vscode-do-co-authoring/issues/1
+			const htmlBlock = new Token('html_block', '', 0);
+			htmlBlock.block = true;
+			return [
+				{
+					...htmlBlock,
+					content: `<div class="${PLUGIN_CSS_CLASS_NAME}" ${dataAttrString}>`,
+				},
+				...parse.call(md, src, env),
+				{
+					...htmlBlock,
+					content: `</div>`,
+				},
+			] as Token[];
+		} else {
+			return parse.call(md, src, env);
+		}
 	};
 
+	// This is actually not called by VSCode currently - they use parse to get tokens, then use own render instance separately
 	md.render = (src, env) => {
 		conditionallyApply();
 		return render.call(md, src, env);

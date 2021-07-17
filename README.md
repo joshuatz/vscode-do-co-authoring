@@ -83,7 +83,6 @@ Version | Date | Notes
 - Add Icon(s)
 - Finalize naming conventions
 - Add command to open the formatting guide (via short link redirect)
-- See if it's possible to conditionally inject the CSS for MD Preview, instead of through `package.json` for all MD files
 
 ### Following extension guidelines
 

@@ -15,9 +15,12 @@ const TRANSFORMED_CSS_FILEPATH = normalize(`${EXT_ROOT}/do-md.css`);
 
 export function prefixCssLines(cssString: string, prefix: string) {
 	// Try to extract selector away from declaration
-	return cssString.replace(/([^{}]+?)({[^{}]+?})/gm, (sub, selector, declaration) => {
-		return `${prefix} ${selector}${declaration}`;
-	});
+	return cssString.replace(
+		/((?:\/\*[^*]*?\*\/)*(?:\s*)(?:\/\*[^*]*?\*\/)*(?:\s*))([^{}]+?)({[^{}]+?})/gm,
+		(sub, htmlCommentsAndWhitespace, selector, declaration) => {
+			return `${htmlCommentsAndWhitespace || ''}${prefix} ${selector}${declaration}`;
+		}
+	);
 }
 
 export async function generateCss(regenerate = false) {

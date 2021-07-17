@@ -56,8 +56,8 @@
 				"title": "DO-CO Toolkit: Remove Draft Artifacts (Clean)"
 			}
 		],
-		"markdown.previewStyles": [
-			"./do-md.css"
+		"markdown.previewScripts": [
+			"./out/preview-injection/md-inject.js"
 		],
 		"snippets": [
 			{
@@ -68,7 +68,8 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
+		"compile": "tsc -p ./ && tsc -p ./src/preview-injection/tsconfig.json",
+		"clean": "rm -rf ./out",
 		"build:css": "ts-node --transpile-only ./scripts/css-gen.ts",
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",

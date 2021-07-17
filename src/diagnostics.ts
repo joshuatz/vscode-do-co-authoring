@@ -13,10 +13,14 @@ const DIAG_CODES = {
 /**
  * Scan document for issues, and update diagnostics collection to findings
  */
-export function refreshDiagnostics(doc: vscode.TextDocument, docoDiagnostics: vscode.DiagnosticCollection): void {
+export function refreshDiagnostics(
+	context: vscode.ExtensionContext,
+	doc: vscode.TextDocument,
+	docoDiagnostics: vscode.DiagnosticCollection
+): void {
 	const diagnostics: vscode.Diagnostic[] = [];
 
-	if (getShouldBeEnabled()) {
+	if (getShouldBeEnabled(context)) {
 		// For right now, just go line-by-line
 		// if more rules are added in future, this will likely need refactoring
 		for (let y = 0; y < doc.lineCount; y++) {
@@ -63,19 +67,19 @@ export function setupDiagnosticListeners(context: vscode.ExtensionContext) {
 
 	// On load, only run diagnostics if open doc
 	if (vscode.window.activeTextEditor) {
-		refreshDiagnostics(vscode.window.activeTextEditor.document, docoDiagnostics);
+		refreshDiagnostics(context, vscode.window.activeTextEditor.document, docoDiagnostics);
 	}
 
 	// Listen for doc change, doc edit, or doc close
 	context.subscriptions.push(
 		vscode.window.onDidChangeActiveTextEditor((editor) => {
 			if (editor) {
-				refreshDiagnostics(editor.document, docoDiagnostics);
+				refreshDiagnostics(context, editor.document, docoDiagnostics);
 			}
 		})
 	);
 	context.subscriptions.push(
-		vscode.workspace.onDidChangeTextDocument((e) => refreshDiagnostics(e.document, docoDiagnostics))
+		vscode.workspace.onDidChangeTextDocument((e) => refreshDiagnostics(context, e.document, docoDiagnostics))
 	);
 
 	context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((doc) => docoDiagnostics.delete(doc.uri)));

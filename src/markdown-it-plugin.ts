@@ -7,17 +7,24 @@ import { getShouldBeEnabled } from './utils';
 import MarkdownIt = require('markdown-it');
 import Token = require('markdown-it/lib/token');
 import { PLUGIN_CSS_CLASS_NAME } from './constants';
+import { ExtensionContext } from 'vscode';
 
 /**
  * This is a workaround, since Markdown-its `.disable()` function does not handle multiple rules with the same name - it will just disable the first one that matches. This function disables ***all*** rules on the given `Ruler`(s) that match the given `ruleName`
  */
-function toggleAllRulesByName(md: MarkdownIt, ruleName: string, updatedEnabledStatus: boolean, scopes: Array<'core' | 'block' | 'inline'> = ['core'], silent = false) {
+function toggleAllRulesByName(
+	md: MarkdownIt,
+	ruleName: string,
+	updatedEnabledStatus: boolean,
+	scopes: Array<'core' | 'block' | 'inline'> = ['core'],
+	silent = false
+) {
 	try {
-		scopes.forEach(scope => {
+		scopes.forEach((scope) => {
 			let matched = false;
 
 			// @ts-ignore - Private APIs
-			md[scope].ruler.__rules__.forEach(r => {
+			md[scope].ruler.__rules__.forEach((r) => {
 				if (r.name === ruleName) {
 					if (r.enabled !== updatedEnabledStatus) {
 						r.enabled = updatedEnabledStatus;
@@ -43,14 +50,18 @@ function toggleAllRulesByName(md: MarkdownIt, ruleName: string, updatedEnabledSt
  * @param md Instance of Markdown-it
  * @param injectData Key-Pair data to be injected via `data-key="val"` html attributes, on highest level injected element
  */
-export function conditionallyExtendMarkdownIt(md: MarkdownIt, injectData?: Record<string, string>): MarkdownIt {
+export function conditionallyExtendMarkdownIt(
+	md: MarkdownIt,
+	context: ExtensionContext,
+	injectData?: Record<string, string>
+): MarkdownIt {
 	let isEnabled = false;
 
 	/**
 	 * Conditionally load (or back-out) rules
 	 */
 	const conditionallyApply = () => {
-		if (getShouldBeEnabled()) {
+		if (getShouldBeEnabled(context)) {
 			if (!isEnabled) {
 				// There are some math rules that interfere with parts of DOCO syntax
 				// I feel it is fine to disable these since
@@ -85,7 +96,7 @@ export function conditionallyExtendMarkdownIt(md: MarkdownIt, injectData?: Recor
 	// Token array returned here eventually gets turned into HTML used for preview
 	md.parse = (src, env) => {
 		conditionallyApply();
-		if (getShouldBeEnabled()) {
+		if (getShouldBeEnabled(context)) {
 			let dataAttrString = '';
 			if (injectData) {
 				dataAttrString = Object.entries(injectData)

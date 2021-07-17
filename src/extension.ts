@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand(getCommandString('removeDraftArtifacts'), () => {
 			const doc = vscode.window.activeTextEditor?.document;
-			if (doc && getShouldBeEnabled(doc)) {
+			if (doc && getShouldBeEnabled(context, doc)) {
 				removeDraftArtifacts(doc, getFullRangeOfDoc(doc));
 			}
 		})
@@ -65,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// VSCode will collect this and call it for MD preview rendering
 	return {
 		extendMarkdownIt(md: MarkdownIt): MarkdownIt {
-			return conditionallyExtendMarkdownIt(md, {
+			return conditionallyExtendMarkdownIt(md, context, {
 				'css-uri': mdCssWebviewUri,
 			});
 		},
@@ -73,4 +73,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	vscode.commands.executeCommand('markdown.preview.refresh');
+}

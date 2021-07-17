@@ -1,20 +1,39 @@
 import * as vscode from 'vscode';
 import { PLUGIN_CONFIG_KEY } from './constants';
+import { Store } from './store';
 
 /**
  * Gets whether or not the extension should be enabled (i.e. *applied*) to the current doc
  *  - Based on settings
  */
-export function getShouldBeEnabled(doc?: vscode.TextDocument) {
-	let enabled = false;
+export function getShouldBeEnabled(context: vscode.ExtensionContext, doc?: vscode.TextDocument) {
+	const store = new Store(context);
+
+	// Convenience fn - set and return
+	const setEnabled = (enabled: boolean) => {
+		store.isEnabled = enabled;
+		return enabled;
+	};
+
 	const { activeTextEditor } = vscode.window;
-	const activeDoc = doc || activeTextEditor?.document;
+	let activeDoc = doc || activeTextEditor?.document;
 	if (activeDoc) {
 		const config = vscode.workspace.getConfiguration(PLUGIN_CONFIG_KEY, activeDoc.uri);
 
 		// Check for project-wide enabling
 		if (config.get('enabled')) {
-			return true;
+			return setEnabled(true);
+		}
+
+		if (activeDoc.languageId !== 'markdown') {
+			// Have to consider last time MD was open
+			if (store.lastMdFile) {
+				activeDoc = store.lastMdFile;
+			} else {
+				return setEnabled(false);
+			}
+		} else {
+			store.lastMdFile = activeDoc;
 		}
 
 		const globPatterns = config.get<null | any[]>('enabledPatterns');
@@ -25,14 +44,14 @@ export function getShouldBeEnabled(doc?: vscode.TextDocument) {
 						pattern: glob,
 					};
 					if (vscode.languages.match(docFilter, activeDoc)) {
-						return true;
+						return setEnabled(true);
 					}
 				}
 			}
 		}
 	}
 
-	return enabled;
+	return setEnabled(false);
 }
 
 /**

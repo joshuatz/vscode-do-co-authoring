@@ -56,6 +56,9 @@ export function conditionallyExtendMarkdownIt(
 	injectData?: Record<string, string>
 ): MarkdownIt {
 	let isEnabled = false;
+	let originalMdOptions: MarkdownIt['options'] = {
+		...md.options,
+	};
 
 	/**
 	 * Conditionally load (or back-out) rules
@@ -80,8 +83,14 @@ export function conditionallyExtendMarkdownIt(
 			}
 		} else {
 			if (isEnabled) {
+				// Back out previous changed to MDIT engine
 				OrderedRules.forEach((rule) => {
 					md.disable(rule.name);
+				});
+				Object.entries(originalMdOptions).forEach((kvPair) => {
+					const key = kvPair[0] as keyof MarkdownIt['options'];
+					const val = kvPair[1];
+					md.options[key] = val;
 				});
 				isEnabled = false;
 			}
